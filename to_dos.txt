@@ -1,0 +1,17 @@
+To Dos
+--------------------------------------------------------------------------------
+
+HTML/CSS
+
+1. Incorporate JavaScript to allow for sorting of tables by individual columns
+
+2. Incorporate JavaScript enable versioned Team Rank table
+    - only show most recent ranking column by default
+    - allow users to click from a dropdown and view rankings from past matchdays
+
+3. Add dynamic indicators in Team Rank column (something like "+" and "-") to
+    indicate direction of most recent rank changes
+
+ELO MODEL
+
+1. Adapt formulation to predict and incorporate ties
