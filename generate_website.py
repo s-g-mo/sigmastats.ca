@@ -1,14 +1,22 @@
 import numpy as np
 import pandas as pd
 from lxml import etree
-from utils import beautify_event_table, beautify_rank_table
+from web_utils import beautify_event_table, beautify_rank_table, determine_next_matchday
+
+next_matchday = determine_next_matchday()
 
 # Read and clean data tables
-df_event = pd.read_csv('../data/event_matchday_2.csv', index_col=0)
-df_rank = pd.read_csv('../data/ranks_matchday_2.csv', index_col=0)
+df_event = pd.read_csv(
+    f'./data/event_CSVs/event_matchday_{next_matchday}.csv', 
+    index_col=0
+)
+df_rank = pd.read_csv(
+    f'./data/ranks/ranks_matchday_{next_matchday}.csv', 
+    index_col=0
+)
 
 df_event = beautify_event_table(df_event)
-df_rank = beautify_rank_table(df_rank)
+df_rank = beautify_rank_table(df_rank, next_matchday)
 
 # Generate HTML for matches table
 matches_html = df_event.to_html(index=False)
@@ -28,9 +36,25 @@ head = etree.SubElement(html, "head")
 title = etree.SubElement(head, "title")
 title.text = "Sigma Stats"
 meta_charset = etree.SubElement(head, "meta", charset="UTF-8")
-meta_viewport = etree.SubElement(head, "meta", name="viewport", content="width=device-width, initial-scale=1.0")
-meta_ie_compat = etree.SubElement(head, "meta", http_equiv="X-UA-Compatible", content="ie=edge")
-link = etree.SubElement(head, "link", rel="stylesheet", type="text/css", href="styles.css")
+meta_viewport = etree.SubElement(
+    head, 
+    "meta", 
+    name="viewport", 
+    content="width=device-width, initial-scale=1.0"
+)
+meta_ie_compat = etree.SubElement(
+    head, 
+    "meta", 
+    http_equiv="X-UA-Compatible", 
+    content="ie=edge"
+)
+link = etree.SubElement(
+    head, 
+    "link", 
+    rel="stylesheet", 
+    type="text/css", 
+    href="styles.css"
+)
 
 # Create body element
 body = etree.SubElement(html, "body")
