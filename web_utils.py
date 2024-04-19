@@ -71,6 +71,7 @@ def beautify_rank_table(df_rank: pd.DataFrame, next_matchday: int):
     df_rank = df_rank.replace(0, '')
     
     df_rank = df_rank.replace('York9 FC', 'York United')
+    df_rank = df_rank[df_rank.Team != 'FC Edmonton']
 
     return df_rank
 
