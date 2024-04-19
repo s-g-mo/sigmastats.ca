@@ -15,3 +15,7 @@ HTML/CSS
 ELO MODEL
 
 1. Adapt formulation to predict and incorporate ties
+
+OTHER
+
+1. Flesh out documentation and details surrounding the implementation
