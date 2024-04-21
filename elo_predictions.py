@@ -44,6 +44,7 @@ for matchday in range(1, next_matchday + 1):
 
 		home_win = event.home_win
 		away_win = event.away_win
+		tie = event.tie
 
 		# Predicted win probability - based on ranks going into current matchday
 		home_rank_exp = df_ranks[df_ranks.team == home][f'matchday_{matchday - 1}_rank_exp'].values 
@@ -64,6 +65,8 @@ for matchday in range(1, next_matchday + 1):
 			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 0
 		if (away_win_prob >=0.5) and home_win:
 			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 0
+		if tie:
+			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 2
 
 		# Evaluate predictions
 		df_event.loc[

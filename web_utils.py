@@ -52,6 +52,7 @@ def beautify_event_table(df_event: pd.DataFrame):
     df_event.loc[(df_event['Prediction Correct?'] == '0.0') & (df_event['Home Score'] == ''), 'Prediction Correct?'] = ''
     df_event.loc[(df_event['Prediction Correct?'] == '1.0'), 'Prediction Correct?'] = 'True'
     df_event.loc[(df_event['Prediction Correct?'] == '0.0'), 'Prediction Correct?'] = 'False'
+    df_event.loc[(df_event['Prediction Correct?'] == '2.0'), 'Prediction Correct?'] = 'False'
 
     return df_event
 
