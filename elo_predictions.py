@@ -65,7 +65,7 @@ for matchday in range(1, next_matchday + 1):
 			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 0
 		if (away_win_prob >=0.5) and home_win:
 			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 0
-		if tie:
+		if tie == 1:
 			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 2
 
 		# Evaluate predictions
