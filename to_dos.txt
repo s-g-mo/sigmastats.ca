@@ -16,6 +16,11 @@ ELO MODEL
 
 1. Adapt formulation to predict and incorporate ties
 
+2. Try some other models, deeper ELO models
+
 OTHER
 
 1. Flesh out documentation and details surrounding the implementation
+
+2. Have some fun with a Monte Carlo sim to predict final placements for each
+   team
