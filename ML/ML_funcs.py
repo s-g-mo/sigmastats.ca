@@ -19,7 +19,7 @@ class FixedValueConstraint(tf.keras.constraints.Constraint):
         return {'value': self.value}
 
 
-def ELO_v1(N_teams: int, fixed_bias: None):
+def ELO_v1(N_teams: int, fixed_bias: float=None):
     team_vector = layers.Input(shape=(N_teams,))
 
     if fixed_bias is not None:
@@ -32,6 +32,12 @@ def ELO_v1(N_teams: int, fixed_bias: None):
     else:
         win_prob = layers.Dense(1, activation='sigmoid')(team_vector)
 
+    return Model(inputs=team_vector, outputs=win_prob)
+
+
+def ELO_v2(N_teams: int):
+    team_vector = layers.Input(shape=(N_teams,))
+    win_prob = layers.Dense(3, activation='softmax')(team_vector)
     return Model(inputs=team_vector, outputs=win_prob)
 
 
@@ -62,15 +68,63 @@ def train_ELO_v1_model(ELO_model, X, Y):
     )
 
 
-def evaluate_ELO_v1(ELO_model, X, Y):
+def train_ELO_v2_model(ELO_model, X, Y):
 
+    ELO_model.compile(
+        optimizer=Adam(learning_rate=0.001), 
+        loss=tf.keras.losses.CategoricalCrossentropy(), 
+        metrics=['categorical_accuracy']
+    )
+    ELO_model.summary()
+
+    es = keras.callbacks.EarlyStopping(
+        patience=3,
+        verbose=1,
+        monitor='val_loss',
+        restore_best_weights=True,
+    )
+    plateau = keras.callbacks.ReduceLROnPlateau(
+        monitor='val_loss',
+        patience=3,
+        min_delta=0.001
+    )
+
+    history = ELO_model.fit(
+        x=X,
+        y=Y,
+        epochs=200,
+        batch_size=32,
+        validation_split=0.1,
+        shuffle=False,
+        callbacks=[es, plateau],
+    )
+
+
+def evaluate_ELO_v1(ELO_model, X, Y):
     predictions = ELO_model.predict(X)
     predictions[predictions >= 0.5] = 1
     predictions[predictions < 0.5] = 0
     print(metrics(Y, predictions, target_names=['away_win', 'home_win']))
 
 
-def construct_ELO_training_data(df_event, N_teams, team_to_idx, N_test_games=20):
+def evaluate_ELO_v2(ELO_model, X, Y):
+    predictions = ELO_model.predict(X)
+    predictions = np.argmax(predictions, axis=1)
+    print(
+        metrics(
+            np.argmax(Y, axis=1), 
+            predictions, 
+            target_names=['away_win', 'tie', 'home_win']
+        )
+    )
+
+
+def construct_ELO_v1_training_data(
+    df_event, 
+    N_teams, 
+    team_to_idx, 
+    N_test_games=20
+):
     team_vectors = np.zeros(shape=(len(df_event), N_teams))
     results = np.zeros(shape=(len(df_event)))
 
@@ -86,6 +140,41 @@ def construct_ELO_training_data(df_event, N_teams, team_to_idx, N_test_games=20)
 
         if home_score > away_score:
             results[i] = 1
+
+    # Split - preserve temporal order when splitting in this case
+    X_train = team_vectors[0:-N_test_games]
+    X_test =  team_vectors[-N_test_games:]
+    Y_train = results[0:-N_test_games]
+    Y_test = results[-N_test_games:]
+
+    return (X_train, X_test, Y_train, Y_test)
+
+
+def construct_ELO_v2_training_data(
+    df_event, 
+    N_teams, 
+    team_to_idx, 
+    N_test_games=20
+):
+    team_vectors = np.zeros(shape=(len(df_event), N_teams))
+    results = np.zeros(shape=(len(df_event), 3))
+
+    for i, event in df_event.iterrows():
+        home = event.Home
+        away = event.Away
+
+        home_score = int(event.Score.split('–')[0]) # this dash is a funny
+        away_score = int(event.Score.split('–')[1]) # uni-code char
+
+        team_vectors[i, team_to_idx[home]] = 1
+        team_vectors[i, team_to_idx[away]] = -1
+
+        if away_score > home_score:
+            results[i, 0] = 1
+        if home_score == away_score:
+            results[i, 1] = 1
+        if home_score > away_score:
+            results[i, 2] = 1 
 
     # Split - preserve temporal order when splitting in this case
     X_train = team_vectors[0:-N_test_games]
