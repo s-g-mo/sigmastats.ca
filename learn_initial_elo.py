@@ -29,7 +29,7 @@ df_team = pd.DataFrame.from_dict(
 df_team.columns = ['team']
 
 # Build training/testing
-X_train, X_test, Y_train, Y_test = ML_funcs.construct_ELO_training_data(
+X_train, X_test, Y_train, Y_test = ML_funcs.construct_ELO_v1_training_data(
     df_event, 
     N_teams, 
     team_to_idx, 
@@ -45,7 +45,6 @@ for i in range(N_models):
 
     learned_ranks = ELO_model.layers[-1].get_weights()[0].flatten()
     df_team[f'rank_{i+1}'] = elo_funcs.convert_to_standard_elo(learned_ranks)
-
 
 df_team['mean_learned_rank'] = df_team.iloc[:, 1:].mean(axis=1)
 df_team.sort_values('mean_learned_rank', ascending=False, inplace=True)
