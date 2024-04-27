@@ -67,14 +67,14 @@ header_h1.text = "Canadian Premier League Power Rankings & Match Predictions"
 # Create matches section
 matches_section = etree.SubElement(body, "section", id="matches")
 matches_header = etree.SubElement(matches_section, "h2")
-matches_header.text = "Matches"
+matches_header.text = "ELO v1 Match Predictions"
 matches_table = etree.SubElement(matches_section, "table")
 matches_table.append(etree.fromstring(matches_html))
 
 # Create team rankings section
 team_rankings_section = etree.SubElement(body, "section", id="team-rankings")
 team_rankings_header = etree.SubElement(team_rankings_section, "h2")
-team_rankings_header.text = "Team Rankings"
+team_rankings_header.text = "ELO v1 Team Rankings"
 team_rankings_table = etree.SubElement(team_rankings_section, "table")
 team_rankings_table.append(etree.fromstring(team_rankings_html))
 
