@@ -6,6 +6,8 @@ import pandas as pd
 from elo_funcs import elo_funcs
 from data_utils import data_utils
 
+from IPython.core.debugger import set_trace
+
 # Load team/idx mapping
 team_to_idx = pickle.load(open('./data/teams/team_idx_dict.pkl','rb'))
 
@@ -112,6 +114,11 @@ df_ranks = df_ranks.sort_values(
 	ascending=False
 ).reset_index(drop=True)
 df_ranks.to_csv(f'./data/ranks/ranks_matchday_{matchday}.csv')
+
+df_event['briar_score_running_mean'] = df_event.briar_score.expanding().mean()
+df_event['running_briar_skill_score'] = elo_funcs.briar_skill_score(
+	df_event['briar_score_running_mean']
+)
 
 df_event_out = df_event[df_event.matchday <= next_matchday].copy()
 df_event_out.to_csv(f'./data/event_CSVs/event_matchday_{matchday}.csv')
