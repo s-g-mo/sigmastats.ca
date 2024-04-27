@@ -15,7 +15,9 @@ def beautify_event_table(df_event: pd.DataFrame):
         'pred_home_win_prob',
         'pred_away_win_prob',
         'correct_pred',
-        'briar_score'
+        'briar_score',
+        'briar_score_running_mean',
+        'running_briar_skill_score',
     ]
     df_event = df_event[event_display_cols]
 
@@ -30,7 +32,9 @@ def beautify_event_table(df_event: pd.DataFrame):
         'pred_home_win_prob': 'Predicted Home Win Prob.',
         'pred_away_win_prob': 'Predicted Away Win Prob.',
         'correct_pred': 'Prediction Correct?',
-        'briar_score': 'Prediction Briar Score'
+        'briar_score': 'Prediction Briar Score',
+        'briar_score_running_mean': 'Running Mean Briar Score',
+        'running_briar_skill_score': 'Running Briar Skill Score',
     }
     df_event = df_event.rename(columns=event_display_name_mapping)
 
@@ -38,6 +42,10 @@ def beautify_event_table(df_event: pd.DataFrame):
 
     # Format data types to make more presentable
     df_event['Prediction Briar Score'] = df_event['Prediction Briar Score'].round(3)
+    df_event['Running Mean Briar Score'] = df_event['Running Mean Briar Score'].round(3)
+    df_event['Running Briar Skill Score'] = df_event['Running Briar Skill Score'].round(3)
+    df_event.loc[df_event['Running Mean Briar Score'].diff() == 0, 'Running Mean Briar Score'] = np.nan
+    df_event.loc[df_event['Running Briar Skill Score'].diff() == 0, 'Running Briar Skill Score'] = np.nan
     df_event = df_event.fillna('')
     df_event['Home Score'] = df_event['Home Score'].astype(str)
     df_event['Away Score'] = df_event['Away Score'].astype(str)
