@@ -12,10 +12,12 @@ df_CPL_2023 = pd.read_csv('./data/historic/CPL_FBRef_2023.csv',)
 df_event = pd.concat([df_CPL_2022, df_CPL_2023])
 df_event = data_utils.preprocess_historic_FBRef(df_event)
 
-# total_home_win_rate + (total_tie_rate / 2) = 0.549. So for two teams of equal 
-# rating, the one at home should have a win prob of 54.9% This is equivalent to
-# a standard ELO difference of about +35, or 0.199 in exp ELO.
-data_driven_bias = -0.199
+# Estimate the home win advantage using past two seasons of data
+home_win_rate = df_event.home_win.sum() / len(df_event)
+tie_rate = df_event.tie.sum() / len(df_event)
+data_driven_bias = elo_funcs.convert_prob_to_elo_diff_exp(
+    home_win_rate + tie_rate / 2
+)
 
 # Load team to idx mapping
 team_to_idx = pickle.load(open('./data/teams/team_idx_dict.pkl', 'rb'))
