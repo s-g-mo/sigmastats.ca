@@ -10,7 +10,7 @@ from data_utils import data_utils
 team_to_idx = pickle.load(open('./data/teams/team_idx_dict.pkl','rb'))
 
 # Load rankings
-df_ranks = pd.read_csv('./data/ranks/ranks_2024.csv', index_col=0)
+df_ranks = pd.read_csv('./data/ranks/ranks_matchday_1.csv', index_col=0)
 bias = df_ranks.data_driven_bias.values[0]
 
 # Load df_event
