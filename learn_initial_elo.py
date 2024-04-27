@@ -69,5 +69,5 @@ df_elo_2024 = df_elo_2024[[
     'matchday_0_rank_standard',
 ]]
 
-df_elo_2024.to_csv('./data/ranks_2024.csv')
+df_elo_2024.to_csv('./data/ranks/2024_matchday_1.csv')
 print(df_elo_2024)
