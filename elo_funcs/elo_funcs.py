@@ -11,6 +11,14 @@ def convert_to_exp_elo(rating):
     return ((rating.flatten() - 1500)/factor)
 
 
+def convert_prob_to_elo_diff_exp(prob, B=0):
+    return -np.log((1 / prob) - 1) - B
+
+
+def convert_prob_to_elo_diff_standard(prob, B=0):
+    return -400 * np.log10((1 / prob) - 1) - B
+
+
 def σ_exp(elo_H, elo_A, B):
     return (1 / (1 + np.exp(-(elo_H - elo_A) + B)))
 
@@ -21,6 +29,7 @@ def σ_standard(elo_H, elo_A, B):
 
 def briar_score(pred, true):
     return (pred - true)**2
+    
 
 # For updating rankings set K = 50 ("standard" is K=20). If two teams play and 
 # neither has an advantage (so win prob = 50/50) then the winner would increase
