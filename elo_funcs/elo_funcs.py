@@ -31,6 +31,9 @@ def briar_score(pred, true):
     return (pred - true)**2
 
 
+def briar_skill_score(briar_score, ref_score=0.25):
+    return 1 - (briar_score / ref_score)
+
 # For updating rankings set K = 50 ("standard" is K=20). If two teams play and 
 # neither has an advantage (so win prob = 50/50) then the winner would increase
 # their rating by k x (1 - 0.5) -> 50 / 2 = 25 (loser would decrease by -25). So
