@@ -7,16 +7,23 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import classification_report as metrics
 
-# Optional way to supply a user-defined bias
-class FixedValueConstraint(tf.keras.constraints.Constraint):
-    def __init__(self, value):
+
+class FixedBiasConstraint(tf.keras.constraints.Constraint):
+    def __init__(self, value=None, vector=None):
         self.value = value
+        self.vector = vector
 
     def __call__(self, w):
-        return tf.fill(w.shape, self.value)
+        if self.value is not None:
+            return tf.fill(w.shape, self.value)
+        elif self.vector is not None:
+            bias = tf.cast(self.vector, dtype=w.dtype)
+            return tf.reshape(bias, w.shape)
+        else:
+            return w
 
     def get_config(self):
-        return {'value': self.value}
+        return {'value': self.value, 'vector': self.vector}
 
 
 def ELO_v1(N_teams: int, fixed_bias: float=None):
@@ -25,7 +32,7 @@ def ELO_v1(N_teams: int, fixed_bias: float=None):
     if fixed_bias is not None:
         win_prob = layers.Dense(
             1, 
-            bias_constraint=FixedValueConstraint(fixed_bias), 
+            bias_constraint=FixedBiasConstraint(value=fixed_bias),
             activation='sigmoid'
         )(team_vector)
 
@@ -35,9 +42,19 @@ def ELO_v1(N_teams: int, fixed_bias: float=None):
     return Model(inputs=team_vector, outputs=win_prob)
 
 
-def ELO_v2(N_teams: int):
+def ELO_v2(N_teams: int, fixed_bias: np.ndarray=None):
     team_vector = layers.Input(shape=(N_teams,))
-    win_prob = layers.Dense(3, activation='softmax')(team_vector)
+
+    if fixed_bias is not None:
+        win_prob = layers.Dense(
+            3, 
+            bias_constraint=FixedBiasConstraint(vector=fixed_bias),
+            activation='softmax'
+        )(team_vector)
+
+    else:
+        win_prob = layers.Dense(3, activation='softmax')(team_vector)
+
     return Model(inputs=team_vector, outputs=win_prob)
 
 
