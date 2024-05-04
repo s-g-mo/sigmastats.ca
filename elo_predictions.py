@@ -40,6 +40,11 @@ for matchday in range(1, next_matchday + 1):
 		home = event.home
 		away = event.away
 
+		if home == 'York United':
+			home = 'York9 FC'
+		if away == 'York United':
+			away = 'York9 FC'
+
 		home_score = event.home_score
 		away_score = event.away_score
 		goal_differential = np.abs(home_score - away_score)
@@ -95,6 +100,7 @@ for matchday in range(1, next_matchday + 1):
 			df_ranks.team == home, 
 			f'matchday_{matchday}_rank_exp'
 		] = new_home_rank
+
 		df_ranks.loc[
 			df_ranks.team == away, 
 			f'matchday_{matchday}_rank_exp'
@@ -104,6 +110,7 @@ for matchday in range(1, next_matchday + 1):
 			df_ranks.team == home, 
 			f'matchday_{matchday}_rank_standard'
 		] = elo_funcs.convert_to_standard_elo(new_home_rank)
+
 		df_ranks.loc[
 			df_ranks.team == away, 
 			f'matchday_{matchday}_rank_standard'
