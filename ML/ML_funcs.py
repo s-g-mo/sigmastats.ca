@@ -88,7 +88,7 @@ def train_ELO_v1_model(ELO_model, X, Y):
 def train_ELO_v2_model(ELO_model, X, Y):
 
     ELO_model.compile(
-        optimizer=Adam(learning_rate=0.001), 
+        optimizer=Adam(learning_rate=0.01), 
         loss=tf.keras.losses.CategoricalCrossentropy(), 
         metrics=['categorical_accuracy']
     )
@@ -110,7 +110,7 @@ def train_ELO_v2_model(ELO_model, X, Y):
         x=X,
         y=Y,
         epochs=200,
-        batch_size=32,
+        batch_size=1,
         validation_split=0.1,
         shuffle=False,
         callbacks=[es, plateau],
