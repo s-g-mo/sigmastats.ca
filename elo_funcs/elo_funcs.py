@@ -28,7 +28,7 @@ def σ_standard(elo_H, elo_A, B):
 
 
 def briar_score(pred, true):
-    return (pred - true)**2
+    return np.mean((pred - true)**2)
 
 
 def briar_skill_score(briar_score, ref_score=0.25):
