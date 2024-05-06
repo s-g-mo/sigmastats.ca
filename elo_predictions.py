@@ -116,6 +116,37 @@ for matchday in range(1, next_matchday + 1):
 			f'matchday_{matchday}_rank_standard'
 		] = elo_funcs.convert_to_standard_elo(new_away_rank)
 
+# Drop postponed matches and carry ranks forward
+df_event = df_event.drop(index=15)
+
+df_ranks.loc[df_ranks.team == 'Forge FC', 'matchday_4_rank_exp'] = df_ranks[df_ranks.team == 'Forge FC'].matchday_3_rank_exp
+df_ranks.loc[df_ranks.team == 'Forge FC', 'matchday_4_rank_standard'] = elo_funcs.convert_to_standard_elo(df_ranks[df_ranks.team == 'Forge FC'].matchday_3_rank_exp.values)
+
+df_ranks.loc[df_ranks.team == 'HFX Wanderers', 'matchday_4_rank_exp'] = df_ranks[df_ranks.team == 'HFX Wanderers'].matchday_3_rank_exp
+df_ranks.loc[df_ranks.team == 'HFX Wanderers', 'matchday_4_rank_standard'] = elo_funcs.convert_to_standard_elo(df_ranks[df_ranks.team == 'HFX Wanderers'].matchday_3_rank_exp.values)
+
+set_trace()
+for event_id in [16, 17, 18, 19]:
+
+	home = df_event[df_event.event_id == event_id].home.values[0]
+	away = df_event[df_event.event_id == event_id].away.values[0]
+
+	if home == 'York United':
+		home = 'York9 FC'
+	if away == 'York United':
+		away = 'York9 FC'
+
+	home_rank_exp = df_ranks[df_ranks.team == home]['matchday_4_rank_exp'].values[0]
+	away_rank_exp = df_ranks[df_ranks.team == away]['matchday_4_rank_exp'].values[0]
+
+	home_win_prob = elo_funcs.σ_exp(home_rank_exp, away_rank_exp, bias)
+	away_win_prob = 1 - home_win_prob
+
+
+	df_event.loc[df_event.event_id == event_id, 'pred_home_win_prob'] = home_win_prob
+	df_event.loc[df_event.event_id == event_id, 'pred_away_win_prob'] = away_win_prob
+	df_event.loc[df_event.event_id == event_id, 'correct_pred'] = np.nan
+
 df_ranks = df_ranks.sort_values(
 	f'matchday_{last_matchday}_rank_exp', 
 	ascending=False
