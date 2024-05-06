@@ -6,8 +6,6 @@ import pandas as pd
 from elo_funcs import elo_funcs
 from data_utils import data_utils
 
-from IPython.core.debugger import set_trace
-
 # Load team/idx mapping
 team_to_idx = pickle.load(open('./data/teams/team_idx_dict.pkl','rb'))
 
@@ -119,13 +117,26 @@ for matchday in range(1, next_matchday + 1):
 # Drop postponed matches and carry ranks forward
 df_event = df_event.drop(index=15)
 
-df_ranks.loc[df_ranks.team == 'Forge FC', 'matchday_4_rank_exp'] = df_ranks[df_ranks.team == 'Forge FC'].matchday_3_rank_exp
-df_ranks.loc[df_ranks.team == 'Forge FC', 'matchday_4_rank_standard'] = elo_funcs.convert_to_standard_elo(df_ranks[df_ranks.team == 'Forge FC'].matchday_3_rank_exp.values)
+df_ranks.loc[
+	df_ranks.team == 'Forge FC', 'matchday_4_rank_exp'
+] = df_ranks[df_ranks.team == 'Forge FC'].matchday_3_rank_exp
 
-df_ranks.loc[df_ranks.team == 'HFX Wanderers', 'matchday_4_rank_exp'] = df_ranks[df_ranks.team == 'HFX Wanderers'].matchday_3_rank_exp
-df_ranks.loc[df_ranks.team == 'HFX Wanderers', 'matchday_4_rank_standard'] = elo_funcs.convert_to_standard_elo(df_ranks[df_ranks.team == 'HFX Wanderers'].matchday_3_rank_exp.values)
+df_ranks.loc[
+	df_ranks.team == 'Forge FC', 'matchday_4_rank_standard'
+] = elo_funcs.convert_to_standard_elo(
+	df_ranks[df_ranks.team == 'Forge FC'].matchday_3_rank_exp.values
+)
 
-set_trace()
+df_ranks.loc[
+	df_ranks.team == 'HFX Wanderers', 'matchday_4_rank_exp'
+] = df_ranks[df_ranks.team == 'HFX Wanderers'].matchday_3_rank_exp
+
+df_ranks.loc[
+	df_ranks.team == 'HFX Wanderers', 'matchday_4_rank_standard'
+] = elo_funcs.convert_to_standard_elo(
+	df_ranks[df_ranks.team == 'HFX Wanderers'].matchday_3_rank_exp.values
+)
+
 for event_id in [16, 17, 18, 19]:
 
 	home = df_event[df_event.event_id == event_id].home.values[0]
