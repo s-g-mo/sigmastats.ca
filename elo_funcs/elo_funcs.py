@@ -31,6 +31,10 @@ def briar_score(pred, true):
     return np.mean((pred - true)**2)
 
 
+def modified_briar_score(home_win_prob):    
+    return 2 * np.abs(0.5 - home_win_prob)
+
+
 def briar_skill_score(briar_score, ref_score=0.25):
     return 1 - (briar_score / ref_score)
 
