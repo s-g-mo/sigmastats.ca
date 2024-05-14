@@ -99,10 +99,16 @@ for matchday in range(1, next_matchday + 1):
 			df_event.loc[df_event.event_id == event_id, 'correct_pred'] = 2
 
 		# Evaluate predictions
-		df_event.loc[
-			df_event.event_id == event_id, 
-			'briar_score'
-		] = elo_funcs.briar_score(home_win_prob, home_win)
+		if (home_win == 1) or (away_win == 1):
+			df_event.loc[
+				df_event.event_id == event_id, 
+				'briar_score'
+			] = elo_funcs.briar_score(home_win_prob, home_win)
+		if (tie == 1):
+			df_event.loc[
+				df_event.event_id == event_id, 
+				'briar_score'
+			] = elo_funcs.modified_briar_score(home_win_prob)
 
 		# Update rankings
 		new_home_rank = elo_funcs.update_rank_exp(
