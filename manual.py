@@ -1,10 +1,10 @@
 # Template for if need to set manual results
-df_event.loc[df_event.event_id == 11, 'score'] = '2–1'
-df_event.loc[df_event.event_id == 11, 'home_score'] = 2.0
-df_event.loc[df_event.event_id == 11, 'away_score'] = 1.0
-df_event.loc[df_event.event_id == 11, 'home_win'] = 1.0
-df_event.loc[df_event.event_id == 11, 'away_win'] = 0.0
-df_event.loc[df_event.event_id == 11, 'tie'] = 0.0
+df_event.loc[df_event.event_id == 11, "score"] = "2–1"
+df_event.loc[df_event.event_id == 11, "home_score"] = 2.0
+df_event.loc[df_event.event_id == 11, "away_score"] = 1.0
+df_event.loc[df_event.event_id == 11, "home_win"] = 1.0
+df_event.loc[df_event.event_id == 11, "away_win"] = 0.0
+df_event.loc[df_event.event_id == 11, "tie"] = 0.0
 
 # If want to plot rank evolution
 # import matplotlib.pyplot as plt

@@ -7,13 +7,9 @@ next_matchday = determine_next_matchday()
 
 # Read and clean data tables
 df_event = pd.read_csv(
-    f'./data/event_CSVs/event_matchday_{next_matchday}.csv', 
-    index_col=0
+    f"./data/event_CSVs/event_matchday_{next_matchday}.csv", index_col=0
 )
-df_rank = pd.read_csv(
-    f'./data/ranks/ranks_matchday_{next_matchday}.csv', 
-    index_col=0
-)
+df_rank = pd.read_csv(f"./data/ranks/ranks_matchday_{next_matchday}.csv", index_col=0)
 
 df_event = beautify_event_table(df_event)
 df_rank = beautify_rank_table(df_rank, next_matchday)
@@ -28,8 +24,8 @@ team_rankings_html = df_rank.to_html(index=False)
 html = etree.Element("html")
 
 # Add DOCTYPE and html lang attribute
-doctype = '<!DOCTYPE html>\n'
-html.set('lang', 'en')
+doctype = "<!DOCTYPE html>\n"
+html.set("lang", "en")
 
 # Create head element
 head = etree.SubElement(html, "head")
@@ -37,23 +33,13 @@ title = etree.SubElement(head, "title")
 title.text = "Sigma Stats"
 meta_charset = etree.SubElement(head, "meta", charset="UTF-8")
 meta_viewport = etree.SubElement(
-    head, 
-    "meta", 
-    name="viewport", 
-    content="width=device-width, initial-scale=1.0"
+    head, "meta", name="viewport", content="width=device-width, initial-scale=1.0"
 )
 meta_ie_compat = etree.SubElement(
-    head, 
-    "meta", 
-    http_equiv="X-UA-Compatible", 
-    content="ie=edge"
+    head, "meta", http_equiv="X-UA-Compatible", content="ie=edge"
 )
 link = etree.SubElement(
-    head, 
-    "link", 
-    rel="stylesheet", 
-    type="text/css", 
-    href="styles.css"
+    head, "link", rel="stylesheet", type="text/css", href="styles.css"
 )
 
 # Create body element
@@ -82,6 +68,6 @@ team_rankings_table.append(etree.fromstring(team_rankings_html))
 html_str = etree.tostring(html, pretty_print=True, encoding="unicode")
 
 # Write HTML content to a file
-with open('index.html', 'w') as file:
+with open("index.html", "w") as file:
     file.write(doctype)
     file.write(html_str)
