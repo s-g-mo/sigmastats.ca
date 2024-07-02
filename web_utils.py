@@ -46,25 +46,30 @@ def beautify_event_table(df_event: pd.DataFrame):
     df_event["Running Briar Skill Score"] = df_event["Running Briar Skill Score"].round(
         3
     )
+
     df_event.loc[
-        df_event["Running Mean Briar Score"].diff() == 0, "Running Mean Briar Score"
+        df_event["Prediction Briar Score"].isna(),
+        ["Running Mean Briar Score", "Running Briar Skill Score"],
     ] = np.nan
-    df_event.loc[
-        df_event["Running Briar Skill Score"].diff() == 0, "Running Briar Skill Score"
-    ] = np.nan
+
     df_event = df_event.fillna("")
     df_event["Home Score"] = df_event["Home Score"].astype(str)
     df_event["Away Score"] = df_event["Away Score"].astype(str)
+
     df_event[["Home Score", "Away Score"]] = df_event[["Home Score", "Away Score"]].map(
         lambda x: x.replace(".0", "")
     )
+
     df_event["Predicted Home Win Prob."] = df_event["Predicted Home Win Prob."].map(
         lambda x: f"{x * 100:.2f}%" if isinstance(x, float) else ""
     )
+
     df_event["Predicted Away Win Prob."] = df_event["Predicted Away Win Prob."].map(
         lambda x: f"{x * 100:.2f}%" if isinstance(x, float) else ""
     )
+
     df_event["Prediction Correct?"] = df_event["Prediction Correct?"].astype(str)
+
     df_event.loc[
         (df_event["Prediction Correct?"] == "0.0") & (df_event["Home Score"] == ""),
         "Prediction Correct?",
