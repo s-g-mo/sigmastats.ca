@@ -13,6 +13,9 @@ team_to_idx = pickle.load(open("./data/teams/team_idx_dict.pkl", "rb"))
 df_ranks = pd.read_csv("./data/ranks/ranks_matchday_1.csv", index_col=0)
 bias = df_ranks.data_driven_bias.values[0]
 
+# Retcon Vancouver FC's rating - set equal to worst team
+df_ranks.loc[df_ranks.team == "Vancouver FC", "matchday_0_rank_exp"] = -0.223884
+
 # Load df_event
 url = "https://fbref.com/en/comps/211/schedule/Canadian-Premier-League-Scores-and-Fixtures"
 df_event = data_utils.load_df_event_FBRef(
@@ -29,6 +32,12 @@ df_past = df_event[df_event.date < t0].copy()
 last_matchday = df_past.matchday.max() if not np.isnan(df_past.matchday.max()) else 0
 next_matchday = last_matchday + 1
 
+# Temp hacky fix for postponed games
+postponed = {
+    15: {"teams": ["Forge FC", "HFX Wanderers"], "matchdays": [4, 3]},
+    55: {"teams": ["HFX Wanderers", "Valour FC"], "matchdays": [14, 13]},
+}
+
 for matchday in range(1, next_matchday + 1):
 
     for _, event in df_event[df_event.matchday == matchday].iterrows():
@@ -36,35 +45,36 @@ for matchday in range(1, next_matchday + 1):
         home = event.home
         away = event.away
 
-        # Temp hacky fix for postponed games
-        if event_id == 15:
-            df_ranks.loc[df_ranks.team == "Forge FC", "matchday_4_rank_exp"] = df_ranks[
-                df_ranks.team == "Forge FC"
-            ].matchday_3_rank_exp
-
-            df_ranks.loc[df_ranks.team == "Forge FC", "matchday_4_rank_standard"] = (
-                elo_funcs.convert_to_standard_elo(
-                    df_ranks[df_ranks.team == "Forge FC"].matchday_3_rank_exp.values
-                )
-            )
-
-            df_ranks.loc[df_ranks.team == "HFX Wanderers", "matchday_4_rank_exp"] = (
-                df_ranks[df_ranks.team == "HFX Wanderers"].matchday_3_rank_exp
-            )
-
-            df_ranks.loc[
-                df_ranks.team == "HFX Wanderers", "matchday_4_rank_standard"
-            ] = elo_funcs.convert_to_standard_elo(
-                df_ranks[df_ranks.team == "HFX Wanderers"].matchday_3_rank_exp.values
-            )
-
-            df_event = df_event[df_event.event_id != 15].reset_index(drop=True)
-            continue
-
         if home == "York United":
             home = "York9 FC"
         if away == "York United":
             away = "York9 FC"
+
+        if event_id in postponed.keys():
+            postponed_event_id = event_id
+            postponed_teams = postponed[postponed_event_id]["teams"]
+            postponed_matchdays = postponed[postponed_event_id]["matchdays"]
+            replace = postponed_matchdays[0]
+            carry_forward = postponed_matchdays[1]
+
+            for t in postponed_teams:
+
+                df_ranks.loc[df_ranks.team == t, f"matchday_{replace}_rank_exp"] = (
+                    df_ranks[df_ranks.team == t][f"matchday_{carry_forward}_rank_exp"]
+                )
+
+                df_ranks.loc[
+                    df_ranks.team == t, f"matchday_{replace}_rank_standard"
+                ] = elo_funcs.convert_to_standard_elo(
+                    df_ranks[df_ranks.team == t][
+                        f"matchday_{carry_forward}_rank_exp"
+                    ].values
+                )
+
+            df_event = df_event[df_event.event_id != postponed_event_id].reset_index(
+                drop=True
+            )
+            continue
 
         home_score = event.home_score
         away_score = event.away_score
@@ -155,3 +165,8 @@ df_event_out.to_csv(f"./data/event_CSVs/event_matchday_{matchday}.csv")
 print(df_event_out)
 print()
 print(df_ranks)
+
+print(f"Number of ties: {(df_event.tie).sum()}")
+print(
+    f"Total Number Correct: {(df_event.correct_pred == 1).sum()} / {(df_event.correct_pred.notna()).sum()}"
+)
