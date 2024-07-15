@@ -51,17 +51,12 @@ def briar_skill_score(briar_score, ref_score=0.25):
 def update_rank_exp(
     rank: float = 0, goal_differential: int = 1, outcome: int = 1, win_prob: float = 0.5
 ):
-    K_exp = 0.175
-    rank = rank + goal_differential * K_exp * (outcome - win_prob)
-    return rank
-
-
-def update_rank_standard(
-    rank: float = 1500,
-    goal_differential: int = 1,
-    outcome: int = 1,
-    win_prob: float = 0.5,
-):
-    K_standard = 30
-    rank = rank + goal_differential * K_standard * (outcome - win_prob)
+    K_exp = 0.125
+    if goal_differential == 0:
+        if win_prob >= 0.5:
+            rank = rank - K_exp * win_prob
+        if win_prob <= 0.5:
+            rank = rank + K_exp * win_prob
+    else:
+        rank = rank + K_exp * (outcome - win_prob)
     return rank
