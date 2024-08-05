@@ -6,6 +6,8 @@ import pandas as pd
 from elo_funcs import elo_funcs
 from data_utils import data_utils
 
+pd.set_option("display.max_rows", 500)
+
 # Load team/idx mapping
 team_to_idx = pickle.load(open("./data/teams/team_idx_dict.pkl", "rb"))
 
@@ -74,7 +76,26 @@ for matchday in range(1, next_matchday + 1):
             df_event = df_event[df_event.event_id != postponed_event_id].reset_index(
                 drop=True
             )
+
             continue
+
+        # Pacific didn't play this week, Valour played 2x - need to carry over
+        if event_id == 63:  # matchday 16
+            t = "Pacific FC"
+            replace = 15
+            carry_forward = 14
+
+            df_ranks.loc[df_ranks.team == t, f"matchday_{replace}_rank_exp"] = df_ranks[
+                df_ranks.team == t
+            ][f"matchday_{carry_forward}_rank_exp"]
+
+            df_ranks.loc[df_ranks.team == t, f"matchday_{replace}_rank_standard"] = (
+                elo_funcs.convert_to_standard_elo(
+                    df_ranks[df_ranks.team == t][
+                        f"matchday_{carry_forward}_rank_exp"
+                    ].values
+                )
+            )
 
         home_score = event.home_score
         away_score = event.away_score
