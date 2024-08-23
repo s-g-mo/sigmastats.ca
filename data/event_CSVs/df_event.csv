@@ -14,7 +14,7 @@
 12,12,4,2024-05-03,Cavalry FC,3–1,Vancouver FC,3.0,1.0,1.0,0.0,0.0
 13,13,4,2024-05-04,Pacific FC,2–0,York United,2.0,0.0,1.0,0.0,0.0
 14,14,4,2024-05-05,Atlético Ottawa,2–0,Valour FC,2.0,0.0,1.0,0.0,0.0
-15,15,4,2024-08-14,Forge FC,,HFX Wanderers,,,,,
+15,15,4,2024-08-14,Forge FC,2–0,HFX Wanderers,2.0,0.0,1.0,0.0,0.0
 16,16,5,2024-05-10,York United,3–1,Valour FC,3.0,1.0,1.0,0.0,0.0
 17,17,5,2024-05-11,HFX Wanderers,1–1,Cavalry FC,1.0,1.0,0.0,0.0,1.0
 18,18,5,2024-05-11,Pacific FC,0–0,Forge FC,0.0,0.0,0.0,0.0,1.0
@@ -71,10 +71,10 @@
 69,69,18,2024-08-10,Forge FC,3–0,Atlético Ottawa,3.0,0.0,1.0,0.0,0.0
 70,70,18,2024-08-11,Vancouver FC,1–0,Pacific FC,1.0,0.0,1.0,0.0,0.0
 71,71,18,2024-08-11,Valour FC,0–1,York United,0.0,1.0,0.0,1.0,0.0
-72,72,19,2024-08-16,York United,,Cavalry FC,,,,,
-73,73,19,2024-08-17,Valour FC,,HFX Wanderers,,,,,
-74,74,19,2024-08-17,Pacific FC,,Atlético Ottawa,,,,,
-75,75,19,2024-08-18,Vancouver FC,,Forge FC,,,,,
+72,72,19,2024-08-16,York United,1–2,Cavalry FC,1.0,2.0,0.0,1.0,0.0
+73,73,19,2024-08-17,Pacific FC,0–3,Atlético Ottawa,0.0,3.0,0.0,1.0,0.0
+74,74,19,2024-08-17,Valour FC,2–1,HFX Wanderers,2.0,1.0,1.0,0.0,0.0
+75,75,19,2024-08-18,Vancouver FC,1–2,Forge FC,1.0,2.0,0.0,1.0,0.0
 76,76,20,2024-08-23,York United,,Forge FC,,,,,
 77,77,20,2024-08-24,HFX Wanderers,,Atlético Ottawa,,,,,
 78,78,20,2024-08-24,Cavalry FC,,Pacific FC,,,,,
