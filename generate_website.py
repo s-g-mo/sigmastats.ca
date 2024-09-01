@@ -13,6 +13,7 @@ df_rank = pd.read_csv(f"./data/ranks/ranks_matchday_{next_matchday}.csv", index_
 
 df_event = beautify_event_table(df_event)
 df_rank = beautify_rank_table(df_rank, next_matchday)
+df_rank = df_rank.iloc[:, -7:]
 
 # Generate HTML for matches table
 matches_html = df_event.to_html(index=False)
@@ -60,7 +61,7 @@ matches_table.append(etree.fromstring(matches_html))
 # Create team rankings section
 team_rankings_section = etree.SubElement(body, "section", id="team-rankings")
 team_rankings_header = etree.SubElement(team_rankings_section, "h2")
-team_rankings_header.text = "ELO v1 Team Rankings"
+team_rankings_header.text = "ELO v1 Team Rankings (Last 7)"
 team_rankings_table = etree.SubElement(team_rankings_section, "table")
 team_rankings_table.append(etree.fromstring(team_rankings_html))
 
