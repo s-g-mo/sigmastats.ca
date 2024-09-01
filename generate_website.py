@@ -58,10 +58,18 @@ matches_header.text = "ELO v1 Match Predictions"
 matches_table = etree.SubElement(matches_section, "table")
 matches_table.append(etree.fromstring(matches_html))
 
+# Create team rank graph section
+graph_section = etree.SubElement(body, "section", id="team-rank-graph")
+graph_header = etree.SubElement(graph_section, "h2")
+graph_header.text = "ELO v1 Team Rankings Evolution Graph"
+graph_img = etree.SubElement(
+    graph_section, "img", src="./figures/elo_evolution.png", width="1500", height="900"
+)
+
 # Create team rankings section
 team_rankings_section = etree.SubElement(body, "section", id="team-rankings")
 team_rankings_header = etree.SubElement(team_rankings_section, "h2")
-team_rankings_header.text = "ELO v1 Team Rankings (Last 7)"
+team_rankings_header.text = "ELO v1 Team Rankings Table (Last 7)"
 team_rankings_table = etree.SubElement(team_rankings_section, "table")
 team_rankings_table.append(etree.fromstring(team_rankings_html))
 
