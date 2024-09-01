@@ -183,6 +183,8 @@ df_event["running_briar_skill_score"] = elo_funcs.briar_skill_score(
 df_event_out = df_event[df_event.matchday <= next_matchday].copy()
 df_event_out.to_csv(f"./data/event_CSVs/event_matchday_{matchday}.csv")
 
+elo_funcs.plot_elo_evolution(df_ranks, next_matchday)
+
 print(df_event_out)
 print()
 print(df_ranks)

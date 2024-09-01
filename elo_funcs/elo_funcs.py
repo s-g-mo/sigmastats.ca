@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 
 def convert_to_standard_elo(rating):
@@ -60,3 +62,54 @@ def update_rank_exp(
     else:
         rank = rank + K_exp * (outcome - win_prob)
     return rank
+
+
+def plot_elo_evolution(df_ranks, next_matchday):
+
+    team_colors = {
+        "Forge FC": np.array([226, 78, 29]) / 255,
+        "Cavalry FC": np.array([166, 44, 46]) / 255,
+        "Atlético Ottawa": np.array([193, 52, 40]) / 255,
+        "Valour FC": np.array([148, 119, 73]) / 255,
+        "Vancouver FC": np.array([18, 18, 18]) / 255,
+        "Pacific FC": np.array([68, 27, 110]) / 255,
+        "HFX Wanderers": np.array([84, 168, 220]) / 255,
+        "York9 FC": np.array([34, 93, 51]) / 255,
+    }
+
+    plot_columns = ["team"] + [col for col in df_ranks.columns if "standard" in col]
+
+    fig, ax = plt.subplots(dpi=300, figsize=(10, 6))
+
+    for team_idx, row in df_ranks[plot_columns].iterrows():
+
+        if row.team == "FC Edmonton":
+            continue
+
+        ax.scatter(
+            np.arange(0, next_matchday + 1),
+            row.values[1:],
+            s=15,
+            color=team_colors[row.team],
+            edgecolor="k",
+        )
+        ax.plot(
+            np.arange(0, next_matchday + 1),
+            row.values[1:],
+            color=team_colors[row.team],
+            label=row.team,
+        )
+
+    for spine in ax.spines.values():
+        spine.set_linewidth(1.25)
+
+    ax.tick_params(width=1.25)
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_ylabel("Team Rank [Standard ELO Units]", weight="bold")
+    ax.set_xlabel("Matchday #", weight="bold")
+    ax.set_xlim(-0.5, next_matchday)
+    ax.set_ylim(1300, 1700)
+    ax.set_title("ELO Evolution By Team", weight="bold")
+    plt.legend(loc="upper left", ncols=4)
+    plt.tight_layout()
+    plt.savefig("./figures/elo_evolution.png")
