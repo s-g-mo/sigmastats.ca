@@ -13,7 +13,8 @@ df_rank = pd.read_csv(f"./data/ranks/ranks_matchday_{next_matchday}.csv", index_
 
 df_event = beautify_event_table(df_event)
 df_rank = beautify_rank_table(df_rank, next_matchday)
-df_rank = df_rank.iloc[:, -7:]
+rank_columns = [0] + list(np.arange(next_matchday + 1)[-7:])
+df_rank = df_rank.iloc[:, rank_columns]
 
 # Generate HTML for matches table
 matches_html = df_event.to_html(index=False)
