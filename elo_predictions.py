@@ -1,10 +1,28 @@
-import os
 import pickle
 import numpy as np
 import pandas as pd
 
 from elo_funcs import elo_funcs
 from data_utils import data_utils
+
+
+def _carry_ranks_forward_if_necessary(df_ranks: pd.DataFrame, matchday: int):
+    current_rank_exp_col = f"matchday_{matchday}_rank_exp"
+    previous_rank_exp_col = f"matchday_{matchday - 1}_rank_exp"
+
+    current_rank_standard_col = f"matchday_{matchday}_rank_standard"
+    previous_rank_standard_col = f"matchday_{matchday - 1}_rank_standard"
+
+    check_for_null_ranks = df_ranks[current_rank_exp_col].isna()
+
+    if check_for_null_ranks.any():
+        df_ranks.loc[check_for_null_ranks, current_rank_exp_col] = df_ranks.loc[
+            check_for_null_ranks, previous_rank_exp_col
+        ]
+        df_ranks.loc[check_for_null_ranks, current_rank_standard_col] = df_ranks.loc[
+            check_for_null_ranks, previous_rank_standard_col
+        ]
+
 
 pd.set_option("display.max_rows", 500)
 
@@ -23,6 +41,7 @@ url = "https://fbref.com/en/comps/211/schedule/Canadian-Premier-League-Scores-an
 df_event = data_utils.load_df_event_FBRef(
     url=url, save_to_disk=True, fpath="./data/event_CSVs/df_event.csv"
 )
+df_event.sort_values("date", inplace=True)
 
 # Split df_event based on past and future
 t0 = pd.Timestamp.utcnow().date()
@@ -33,12 +52,6 @@ df_past = df_event[df_event.date < t0].copy()
 # Figure out most recent matchday
 last_matchday = df_past.matchday.max() if not np.isnan(df_past.matchday.max()) else 0
 next_matchday = last_matchday + 1
-
-# Temp hacky fix for postponed games
-postponed = {
-    15: {"teams": ["Forge FC", "HFX Wanderers"], "matchdays": [4, 3]},
-    55: {"teams": ["HFX Wanderers", "Valour FC"], "matchdays": [14, 13]},
-}
 
 for matchday in range(1, next_matchday + 1):
 
@@ -51,51 +64,6 @@ for matchday in range(1, next_matchday + 1):
             home = "York9 FC"
         if away == "York United":
             away = "York9 FC"
-
-        if event_id in postponed.keys():
-            postponed_event_id = event_id
-            postponed_teams = postponed[postponed_event_id]["teams"]
-            postponed_matchdays = postponed[postponed_event_id]["matchdays"]
-            replace = postponed_matchdays[0]
-            carry_forward = postponed_matchdays[1]
-
-            for t in postponed_teams:
-
-                df_ranks.loc[df_ranks.team == t, f"matchday_{replace}_rank_exp"] = (
-                    df_ranks[df_ranks.team == t][f"matchday_{carry_forward}_rank_exp"]
-                )
-
-                df_ranks.loc[
-                    df_ranks.team == t, f"matchday_{replace}_rank_standard"
-                ] = elo_funcs.convert_to_standard_elo(
-                    df_ranks[df_ranks.team == t][
-                        f"matchday_{carry_forward}_rank_exp"
-                    ].values
-                )
-
-            df_event = df_event[df_event.event_id != postponed_event_id].reset_index(
-                drop=True
-            )
-
-            continue
-
-        # Pacific didn't play this week, Valour played 2x - need to carry over
-        if event_id == 63:  # matchday 16
-            t = "Pacific FC"
-            replace = 15
-            carry_forward = 14
-
-            df_ranks.loc[df_ranks.team == t, f"matchday_{replace}_rank_exp"] = df_ranks[
-                df_ranks.team == t
-            ][f"matchday_{carry_forward}_rank_exp"]
-
-            df_ranks.loc[df_ranks.team == t, f"matchday_{replace}_rank_standard"] = (
-                elo_funcs.convert_to_standard_elo(
-                    df_ranks[df_ranks.team == t][
-                        f"matchday_{carry_forward}_rank_exp"
-                    ].values
-                )
-            )
 
         home_score = event.home_score
         away_score = event.away_score
@@ -157,7 +125,6 @@ for matchday in range(1, next_matchday + 1):
         df_ranks.loc[df_ranks.team == home, f"matchday_{matchday}_rank_exp"] = (
             new_home_rank
         )
-
         df_ranks.loc[df_ranks.team == away, f"matchday_{matchday}_rank_exp"] = (
             new_away_rank
         )
@@ -169,6 +136,8 @@ for matchday in range(1, next_matchday + 1):
         df_ranks.loc[df_ranks.team == away, f"matchday_{matchday}_rank_standard"] = (
             elo_funcs.convert_to_standard_elo(new_away_rank)
         )
+
+    _carry_ranks_forward_if_necessary(df_ranks=df_ranks, matchday=matchday)
 
 df_ranks = df_ranks.sort_values(
     f"matchday_{last_matchday}_rank_exp", ascending=False
@@ -191,5 +160,6 @@ print(df_ranks)
 
 print(f"Number of ties: {(df_event.tie).sum()}")
 print(
-    f"Total Number Correct: {(df_event.correct_pred == 1).sum()} / {(df_event.correct_pred.notna()).sum()}"
+    f"Total Number Correct: {(df_event.correct_pred == 1).sum()} / "
+    f"{(df_event.home_win.notna()).sum()}"
 )
