@@ -137,7 +137,8 @@ for matchday in range(1, next_matchday + 1):
             elo_funcs.convert_to_standard_elo(new_away_rank)
         )
 
-    _carry_ranks_forward_if_necessary(df_ranks=df_ranks, matchday=matchday)
+    if matchday != next_matchday:
+        _carry_ranks_forward_if_necessary(df_ranks=df_ranks, matchday=matchday)
 
 df_ranks = df_ranks.sort_values(
     f"matchday_{last_matchday}_rank_exp", ascending=False
